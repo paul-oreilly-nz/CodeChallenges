@@ -7,29 +7,34 @@
 #
 # The following is our first solution:
 
-
-def build_folder(data):
-
-    # Skipping the first item (0) to exclude the C: drive
-    for i in range(1, len(data)):
-        item = data[i]
-        final_text = ""
-
-        if item['parentId'] != 0:
-            final_text += "   "
-
-        final_text += item['name']
-        print(final_text)
+from pprint import pprint
 
 
-build_folder([
-    {'itemId': 0, 'name': 'C:\\', 'parentId': None, 'hasChildren': True},
-    {'itemId': 1, 'name': 'images', 'parentId': 0, 'hasChildren': True},
-    {'itemId': 2, 'name': 'homer.jpg', 'parentId': 1, 'hasChildren': False},
-    {'itemId': 3, 'name': 'austin_powers.groovy', 'parentId': 1, 'hasChildren': False},
-    {'itemId': 4, 'name': 'programs', 'parentId': 0, 'hasChildren': False},
-    {'itemId': 5, 'name': 'windows', 'parentId': 0, 'hasChildren': False},
-])
+def build_folder(data, indent="  "):
+    # Skip the first item - "C:\"
+    result = ""
+    # WARNING: We assume here that ItemID and array order is the same.
+    # WARNING: We also assume the items are therefore in order, and that children are always after parents
+    for record in data[1:]:
+        # work out our indent and add it to the current record
+        record["indent_level"] = (
+            0
+            if record["parentId"] == 0
+            else data[record["parentId"]]["indent_level"] + 1
+        )
+        # render the string and append to the result
+        result += "{0}{1}\n".format(indent * record["indent_level"], record["name"])
+    print(result)
+
+
+first_sample = [
+    {"itemId": 0, "name": "C:\\", "parentId": None, "hasChildren": True},
+    {"itemId": 1, "name": "images", "parentId": 0, "hasChildren": True},
+    {"itemId": 2, "name": "homer.jpg", "parentId": 1, "hasChildren": False},
+    {"itemId": 3, "name": "austin_powers.groovy", "parentId": 1, "hasChildren": False},
+    {"itemId": 4, "name": "programs", "parentId": 0, "hasChildren": False},
+    {"itemId": 5, "name": "windows", "parentId": 0, "hasChildren": False},
+]
 
 
 # Result:
@@ -46,17 +51,17 @@ build_folder([
 # Modify the function in a way to allow represent the complexity
 # of a real drive
 # Sample input:
-# [
-#     {'itemId': 0, 'name': 'C:\\', 'parentId': None, 'hasChildren': True},
-#     {'itemId': 1, 'name': 'images', 'parentId': 0, 'hasChildren': True},
-#     {'itemId': 2, 'name': 'homer.jpg', 'parentId': 1, 'hasChildren': False},
-#     {'itemId': 3, 'name': 'austin_powers.groovy', 'parentId': 1, 'hasChildren': False},
-#     {'itemId': 4, 'name': 'programs', 'parentId': 0, 'hasChildren': True},
-#     {'itemId': 5, 'name': 'node', 'parentId': 4, 'hasChildren': True},
-#     {'itemId': 6, 'name': 'bin', 'parentId': 5, 'hasChildren': True},
-#     {'itemId': 7, 'name': 'nodejs.exe', 'parentId': 6, 'hasChildren': False},
-#     {'itemId': 8, 'name': 'windows', 'parentId': 0, 'hasChildren': False},
-# ]
+second_sample = [
+    {"itemId": 0, "name": "C:\\", "parentId": None, "hasChildren": True},
+    {"itemId": 1, "name": "images", "parentId": 0, "hasChildren": True},
+    {"itemId": 2, "name": "homer.jpg", "parentId": 1, "hasChildren": False},
+    {"itemId": 3, "name": "austin_powers.groovy", "parentId": 1, "hasChildren": False},
+    {"itemId": 4, "name": "programs", "parentId": 0, "hasChildren": True},
+    {"itemId": 5, "name": "node", "parentId": 4, "hasChildren": True},
+    {"itemId": 6, "name": "bin", "parentId": 5, "hasChildren": True},
+    {"itemId": 7, "name": "nodejs.exe", "parentId": 6, "hasChildren": False},
+    {"itemId": 8, "name": "windows", "parentId": 0, "hasChildren": False},
+]
 # Expected result:
 # images
 #    homer.jpg
@@ -66,3 +71,5 @@ build_folder([
 #       bin
 #          nodejs.exe
 # windows
+
+build_folder(second_sample, "   ")
