@@ -5,9 +5,6 @@
 # Other component is in charge of read the drive content
 # and pass that information to our function.
 #
-# The following is our first solution:
-
-from pprint import pprint
 
 
 def build_folder(data, indent="  "):
